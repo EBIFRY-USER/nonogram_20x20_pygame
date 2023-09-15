@@ -101,11 +101,12 @@ class NonogramGame:
         for i in range(self.size):
             for j in range(self.size):
                 color = (255, 255, 255)
-                
                 if hasattr(self, 'show_solution') and self.show_solution:
                     # 凸顯不正確的儲存格
-                    if self.board[i, j] != self.solution[i, j]:
-                        color = (0, 0, 255)  # 紅色
+                    if self.board[i, j] == "*" and self.solution[i, j] == ".":
+                        color = (0, 0, 255)  # 藍色
+                    elif self.board[i, j] in [".", "X"] and self.solution[i, j] == "*":
+                        color = (0, 0, 255)  # 藍色
                     elif self.solution[i, j] == "*":
                         color = (0, 0, 0)
                 else:
@@ -148,7 +149,11 @@ class NonogramGame:
         self.draw_hints()
 
     def check_win(self):
-        return np.array_equal(self.board, self.solution)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.solution[i, j] == "*" and self.board[i, j] != "*":
+                    return False
+        return True
 
     def play(self):
         clock = pygame.time.Clock()
@@ -184,7 +189,7 @@ class NonogramGame:
                 game_won = True
                 font = pygame.font.SysFont('arial', 48)  # 設定字型和大小
                 text = font.render("Congratulations! You've solved this nonogram!", True, (0, 0, 0))  # 生成文本圖像
-                text_rect = text.get_rect(center=(self.win_width/2, self.win_height/2))  # 設定文本位置
+                text_rect = text.get_rect(center=(self.win_width/2 + 150, self.win_height/2))  # 設定文本位置
                 self.win.blit(text, text_rect)  # 將文本繪製到視窗上
                 pygame.display.flip()  # 更新視窗以顯示文本
                 pygame.time.wait(10000)
